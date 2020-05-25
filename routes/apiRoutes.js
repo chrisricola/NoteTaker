@@ -19,7 +19,20 @@ module.exports = function(app) {
         res.json(savedNotes);
     })
 
-    };
+    app.delete("/api/notes/:id", function(req, res) {
+        let savedNotes = JSON.parse(fs.readFileSync("./db/db.json"));
+        let deleteId = parseInt(req.params.id);
+        let filterId = savedNotes.filter(deletenote => deletenote.id !== deleteId);
+        let stringifiedNotes = JSON.stringify(filterId);
+
+        fs.writeFileSync("./db/db.json", stringifiedNotes,(err,data) => {
+            if (err) throw err;
+        })
+        res.json(savedNotes);
+    });
+
+};
+
     
     
 
