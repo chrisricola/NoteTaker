@@ -3,6 +3,7 @@ const fs = require("fs");
 
 var i = 0;
 
+
 module.exports = function(app) {
     app.get("/api/notes", function(req, res) {
         res.json(db);
@@ -21,14 +22,12 @@ module.exports = function(app) {
 
     app.delete("/api/notes/:id", function(req, res) {
         let savedNotes = JSON.parse(fs.readFileSync("./db/db.json"));
-        let deleteId = parseInt(req.params.id);
-        let filterId = savedNotes.filter(deletenote => deletenote.id !== deleteId);
-        let stringifiedNotes = JSON.stringify(filterId);
+        let deleteId = parseInt(req.params.id);  
+        filteredNotes = savedNotes.filter(deletenote => deletenote.id !== deleteId);
 
-        fs.writeFileSync("./db/db.json", stringifiedNotes,(err,data) => {
-            if (err) throw err;
-        })
-        res.json(savedNotes);
+
+        fs.writeFileSync("./db/db.json", JSON.stringify(filteredNotes));
+        res.json(filteredNotes);
     });
 
 };
