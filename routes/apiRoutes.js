@@ -1,4 +1,4 @@
-const db = require("../db/db.json");
+let db = require("../db/db.json");
 const fs = require("fs");
 
 var i = 0;
@@ -6,29 +6,42 @@ var i = 0;
 
 module.exports = function(app) {
     app.get("/api/notes", function(req, res) {
-        res.json(db);
+        fs.readFile("./db/db.json",'utf8', function(err,data) {
+            if(err) { throw err;
+            } else { 
+            let notesArr = JSON.parse(data);
+            res.json(notesArr);
+            }
+        })
+        
       });
 
       app.post("/api/notes", function(req, res) {
-        let savedNotes = JSON.parse(fs.readFileSync("./db/db.json"));
         let newNote = req.body;
-        newNote.id = i + 1;
-        savedNotes.push(newNote);
-        i++;
+        newNote.id = db.length;
+        db.push(newNote);
     
-        fs.writeFileSync("./db/db.json", JSON.stringify(savedNotes));
-        res.json(savedNotes);
+        fs.writeFile("./db/db.json", JSON.stringify(db), err => {
+            if(err) throw err;
+            res.json(true);
+        });
+        
     })
 
     app.delete("/api/notes/:id", function(req, res) {
-        let savedNotes = JSON.parse(fs.readFileSync("./db/db.json"));
         let deleteId = parseInt(req.params.id);  
-        filteredNotes = savedNotes.filter(deletenote => deletenote.id !== deleteId);
+        console.log(deleteId)
+        db = db.filter(deletenote => deletenote.id !== deleteId);
+        // console.log(filteredNotes);
+        
 
 
-        fs.writeFileSync("./db/db.json", JSON.stringify(filteredNotes));
-        res.json(filteredNotes);
-    });
+        fs.writeFile("./db/db.json", JSON.stringify(db), err => {
+            if (err) throw err;
+            res.json(true);
+        });
+        
+    })
 
 };
 
